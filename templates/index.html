@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Adaptive Learning Support</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+  <h1>AI-Based Adaptive Learning System</h1>
+  <p class="subtitle">Generate a sentence, write it by hand, upload the image, and receive feedback.</p>
+
+  <section class="card">
+    <h2>1. Generate Practice Sentence</h2>
+    <div class="controls">
+      <label>Difficulty
+        <select id="difficulty">
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </label>
+      <label>Topic
+        <select id="topic">
+          <option value="animals">Animals</option>
+          <option value="everyday life">Everyday Life</option>
+          <option value="school">School</option>
+        </select>
+      </label>
+    </div>
+    <button onclick="generateSentence()">Generate</button>
+    <div id="sentence" class="sentence">Your practice sentence will appear here.</div>
+  </section>
+
+  <section class="card">
+    <h2>2. Upload Handwritten Response</h2>
+    <input id="image" type="file" accept="image/*">
+    <button onclick="evaluateResponse()">Evaluate Response</button>
+  </section>
+
+  <section class="card" id="result" hidden>
+    <h2>3. Result</h2>
+    <p><strong>OCR text:</strong> <span id="ocr"></span></p>
+    <p><strong>Score:</strong> <span id="score"></span>%</p>
+    <p><strong>Feedback:</strong> <span id="feedback"></span></p>
+    <p><strong>Next difficulty:</strong> <span id="nextDifficulty"></span></p>
+  </section>
+
+  <p id="error" class="error"></p>
+</div>
+<script>
+let expected = "";
+
+async function generateSentence() {
+  const difficulty = document.getElementById("difficulty").value;
+  const topic = document.getElementById("topic").value;
+
+  const response = await fetch("/generate", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({difficulty, topic})
+  });
+  const data = await response.json();
+
+  expected = data.sentence;
+  document.getElementById("sentence").textContent = expected;
+  document.getElementById("error").textContent = "";
+}
+
+async function evaluateResponse() {
+  const file = document.getElementById("image").files[0];
+  if (!file) {
+    document.getElementById("error").textContent = "Please select a handwriting image.";
+    return;
+  }
+  if (!expected) {
+    document.getElementById("error").textContent = "Generate a sentence first.";
+    return;
+  }
+
+  const form = new FormData();
+  form.append("image", file);
+  form.append("expected", expected);
+  form.append("difficulty", document.getElementById("difficulty").value);
+
+  const response = await fetch("/evaluate", {method: "POST", body: form});
+  const data = await response.json();
+
+  if (data.error) {
+    document.getElementById("error").textContent = data.error;
+    return;
+  }
+
+  document.getElementById("result").hidden = false;
+  document.getElementById("ocr").textContent = data.extracted;
+  document.getElementById("score").textContent = data.score;
+  document.getElementById("feedback").textContent = data.feedback;
+  document.getElementById("nextDifficulty").textContent = data.new_difficulty;
+}
+</script>
+</body>
+</html>
