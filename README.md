@@ -73,6 +73,4 @@ http://127.0.0.1:5000
 The first GPT-2 generation may take longer because the pretrained model needs to be downloaded and loaded.
 
 
-- Add a curated sentence dataset and validate generated sentences.
-- Add a dashboard showing progress over time.
-- Add accessibility features and human evaluation with target learners.
+
