@@ -72,25 +72,7 @@ http://127.0.0.1:5000
 
 The first GPT-2 generation may take longer because the pretrained model needs to be downloaded and loaded.
 
-## Important project/interview notes
 
-- GPT-2 is the pretrained language model.
-- Hugging Face Transformers is the library used to load/tokenize/run GPT-2.
-- GPT-2 is used for text generation, not handwriting recognition.
-- OCR converts the uploaded handwriting image into text.
-- The evaluation layer compares the OCR output with the expected sentence.
-- The adaptive layer changes difficulty based on the evaluation score.
-
-## Limitations
-
-This is a learning/demo prototype. OCR quality depends heavily on handwriting, image quality, and the installed OCR engine. GPT-2 is an older generative model and can produce awkward or irrelevant text, so generated sentences should be validated/filtered in a production system.
-
-## Suggested improvements
-
-- Store learner history in a database.
-- Add user authentication.
-- Add a better handwriting-specific OCR model.
-- Add spelling-aware error categories.
 - Add a curated sentence dataset and validate generated sentences.
 - Add a dashboard showing progress over time.
 - Add accessibility features and human evaluation with target learners.
